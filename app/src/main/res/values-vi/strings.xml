@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MyMobile26</string>
+<string name="label_english">Tiếng Anh</string>
+<string name="label_vietnamese">Tiếng Việt</string>
+<string name="add_successful">Thẻ flash đã được thêm thành công vào cơ sở dữ liệu của bạn.</string>
+<string name="add_unsuccessful">Thẻ flash đã tồn tại trong cơ sở dữ liệu của bạn.</string>
+</resources>

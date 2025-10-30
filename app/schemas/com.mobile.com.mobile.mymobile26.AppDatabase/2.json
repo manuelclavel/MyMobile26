@@ -1,0 +1,53 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "f62923ba845f7105bf0c80eaa0de3401",
+    "entities": [
+      {
+        "tableName": "FlashCard",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `english_card` TEXT, `vietnamese_card` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "uid",
+            "columnName": "uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "englishCard",
+            "columnName": "english_card",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "vietnameseCard",
+            "columnName": "vietnamese_card",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "uid"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_FlashCard_english_card_vietnamese_card",
+            "unique": false,
+            "columnNames": [
+              "english_card",
+              "vietnamese_card"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_FlashCard_english_card_vietnamese_card` ON `${TABLE_NAME}` (`english_card`, `vietnamese_card`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f62923ba845f7105bf0c80eaa0de3401')"
+    ]
+  }
+}

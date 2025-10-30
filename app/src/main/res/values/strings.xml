@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MyMobile26</string>
+    <string name="label_english">English</string>
+    <string name="label_vietnamese">Vietnamese</string>
+    <string name="add_successful">Flash card successfully added to your database.</string>
+    <string name="add_unsuccessful">Flash card already exists in your database.</string>
+
+</resources>

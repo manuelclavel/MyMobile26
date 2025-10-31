@@ -1,5 +1,4 @@
 
-import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
@@ -9,26 +8,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.mobile.DataManager
 import com.mobile.R
-import com.mobile.com.mobile.mymobile26.FlashCard
-import com.mobile.com.mobile.mymobile26.FlashCardDao
-import com.mobile.getAll
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 
 
 @Composable
 fun AddCardScreen(
     changeMessage: (String) -> Unit,
-    addFlashCard: (String, String) -> Int
+    dataManager: DataManager
 ) {
     var enWord by rememberSaveable { mutableStateOf("") }
     var vnWord by rememberSaveable { mutableStateOf("") }
@@ -55,17 +48,21 @@ fun AddCardScreen(
         Button(
             modifier = Modifier.semantics{contentDescription="Add"},
             onClick = {
-                val code = addFlashCard(enWord, vnWord)
-                if (code == 200) {
-                    enWord = ""
-                    vnWord = ""
-                    changeMessage(messageAddSuccessful)
-                    Log.d("MANU", "Successful")
-                } else if (code == 501) {
-                    changeMessage(messageAddUnSuccessful)
-                    Log.d("MANU", "Unsuccessful")
-                } else {
-                    Log.d("MANU", "Unexpected result")
+                val code = dataManager.addFlashCard(enWord, vnWord)
+                when (code) {
+                    200 -> {
+                        enWord = ""
+                        vnWord = ""
+                        changeMessage(messageAddSuccessful)
+                        Log.d("MANU", "Successful")
+                    }
+                    501 -> {
+                        changeMessage(messageAddUnSuccessful)
+                        Log.d("MANU", "Unsuccessful")
+                    }
+                    else -> {
+                        Log.d("MANU", "Unexpected result")
+                    }
                 }
             })
                 {

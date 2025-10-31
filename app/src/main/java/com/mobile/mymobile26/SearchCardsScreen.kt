@@ -1,11 +1,11 @@
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.mobile.com.mobile.mymobile26.FlashCard
+import com.mobile.DataManager
 
 @Composable
-fun SearchCardsScreen(getAllFlashCards: () -> List<FlashCard>) {
-    getAllFlashCards()
+fun SearchCardsScreen(dataManager: DataManager) {
+    dataManager.getFlashCards()
     Column() {
         Text("Search Cards Screen: Working on it")
     }

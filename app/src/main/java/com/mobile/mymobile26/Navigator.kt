@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.mobile.com.mobile.mymobile26.FlashCard
+import com.mobile.DataManager
 
 
 //@OptIn(ExperimentalMaterial3Api::class)
@@ -32,8 +32,7 @@ import com.mobile.com.mobile.mymobile26.FlashCard
 @Composable
 fun Navigator(
     navController: NavHostController,
-    getAllFlashCards: () -> List<FlashCard>,
-    addFlashCard: (String, String) -> Int
+    dataManager: DataManager
 ) {
     val navigateToAddCard = fun() {
         navController.navigate("add_card")
@@ -118,7 +117,7 @@ fun Navigator(
             composable(route = "add_card") {
                 AddCardScreen(
                     changeMessage = changeMessage,
-                    addFlashCard = addFlashCard
+                    dataManager = dataManager
                 )
             }
             // STUDY CARDS
@@ -129,7 +128,7 @@ fun Navigator(
             // SEARCH CARDS
             composable(route = "search_cards") {
                 SearchCardsScreen(
-                    getAllFlashCards =  getAllFlashCards
+                    dataManager =  dataManager
                 )
             }
         }

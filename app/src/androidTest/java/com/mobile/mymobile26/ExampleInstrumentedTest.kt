@@ -10,8 +10,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.platform.app.InstrumentationRegistry
+import com.mobile.DataManager
+import com.mobile.com.mobile.mymobile26.AbstractDataManager
 import com.mobile.com.mobile.mymobile26.FlashCard
+import com.mobile.com.mobile.mymobile26.FlashCardDao
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -59,22 +61,28 @@ class MyComposeTest {
     }
     // HomeScreen
     // type: Navigation
+
+
+   
     @Test
     fun clickOnAddCardSuccess() {
-        val dummyAddFlashCardSuccess =  fun(english:String, vietnamese: String): Int {
+        val dummyAddFlashCardSuccessful =  fun(english:String, vietnamese: String): Int {
             return 200
         }
         val dummyGetAllFlashCards =  fun(): List<FlashCard> {
             return emptyList()
         }
+        val dummyDataManager = DataManager(
+            addFlashCard = dummyAddFlashCardSuccessful,
+            getFlashCards = dummyGetAllFlashCards
+        )
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
             Navigator(
                 navController = navController,
-                addFlashCard = dummyAddFlashCardSuccess,
-                getAllFlashCards = dummyGetAllFlashCards
+                dataManager = dummyDataManager,
             )
         }
         composeTestRule.runOnUiThread {
@@ -96,14 +104,18 @@ class MyComposeTest {
         val dummyGetAllFlashCards =  fun(): List<FlashCard> {
             return emptyList()
         }
+        
+        val dummyDataManager = DataManager(
+            addFlashCard = dummyAddFlashCardUnSuccessful,
+            getFlashCards = dummyGetAllFlashCards
+        )
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
             Navigator(
                 navController = navController,
-                addFlashCard = dummyAddFlashCardUnSuccessful,
-                getAllFlashCards = dummyGetAllFlashCards
+                dataManager = dummyDataManager
             )
         }
         composeTestRule.runOnUiThread {

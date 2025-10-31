@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
+import com.mobile.com.mobile.mymobile26.AbstractDataManager
 import com.mobile.com.mobile.mymobile26.AppDatabase
 import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardDao
@@ -36,16 +37,14 @@ suspend fun insertAll(dao: FlashCardDao, vararg flashCards: FlashCard) {
     }
 }
 
+class DataManager(
+    override val addFlashCard: (String, String) -> Int,
+    override val getFlashCards: () -> List<FlashCard>
+) : AbstractDataManager()
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-        //val db = AppDatabaseSingleton.getInstance(
-        //    context = applicationContext
-        //)
-
 
         enableEdgeToEdge()
         setContent {
@@ -55,8 +54,7 @@ class MainActivity : ComponentActivity() {
                 AppDatabase::class.java, "MyMobile26Database"
             ).build()
             val flashCardDao = db.flashCardDao()
-
-            val getAllFlashCards =  fun(): List<FlashCard> {
+            val getFlashCards = fun (): List<FlashCard> {
                 var flashCards : List<FlashCard> = emptyList()
                 runBlocking {
                     async {
@@ -77,8 +75,7 @@ class MainActivity : ComponentActivity() {
                 }
                 return flashCards
             }
-
-            val addFlashCard =  fun(english:String, vietnamese: String): Int {
+            val addFlashCard = fun (english :String, vietnamese: String): Int {
                 var code = 0
                 runBlocking {
                     async {
@@ -108,10 +105,13 @@ class MainActivity : ComponentActivity() {
                 return code
             }
 
-
+            val dataManager = DataManager(
+                addFlashCard = addFlashCard,
+                getFlashCards = getFlashCards
+            )
 
             MyMobile26Theme {
-                Navigator(navController, getAllFlashCards, addFlashCard)
+                Navigator(navController, dataManager)
             }
         }
     }

@@ -5,15 +5,18 @@ import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
+import androidx.room.DeleteTable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.RenameTable
 import androidx.room.RoomDatabase
+import androidx.room.migration.AutoMigrationSpec
 
 
-@Entity(indices = [Index(value = ["english_card","vietnamese_card"], unique = true)])
+@Entity(tableName = "FlashCards", indices = [Index(value = ["english_card","vietnamese_card"], unique = true)])
 data class FlashCard(
     @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "english_card") val englishCard: String?,
@@ -22,18 +25,18 @@ data class FlashCard(
 
 @Dao
 interface FlashCardDao {
-    @Query("SELECT * FROM FlashCard")
-    fun getAll(): List<FlashCard>
+    @Query("SELECT * FROM FlashCards")
+    suspend fun getAll(): List<FlashCard>
 
-    @Query("SELECT * FROM FlashCard WHERE uid IN (:flashCardIds)")
-    fun loadAllByIds(flashCardIds: IntArray): List<FlashCard>
+    @Query("SELECT * FROM FlashCards WHERE uid IN (:flashCardIds)")
+    suspend fun loadAllByIds(flashCardIds: IntArray): List<FlashCard>
 
-    @Query("SELECT * FROM FlashCard WHERE english_card LIKE :english AND " +
+    @Query("SELECT * FROM FlashCards WHERE english_card LIKE :english AND " +
             "vietnamese_card LIKE :vietnamese LIMIT 1")
-    fun findByCards(english: String, vietnamese: String): FlashCard
+    suspend fun findByCards(english: String, vietnamese: String): FlashCard
 
     @Insert
-    fun insertAll(vararg flashCard: FlashCard)
+    suspend fun insertAll(vararg flashCard: FlashCard)
 
     @Delete
     fun delete(flashCard: FlashCard)
@@ -52,7 +55,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun flashCardDao(): FlashCardDao
 }
 */
+
+/*
 @Database(
+
     version = 3,
     entities = [FlashCard::class],
     autoMigrations = [
@@ -62,3 +68,22 @@ abstract class AppDatabase : RoomDatabase() {
 abstract class AppDatabase : RoomDatabase() {
     abstract fun flashCardDao(): FlashCardDao
 }
+*/
+@Database(
+    version = 4,
+    entities = [FlashCard::class],
+    autoMigrations = [
+        AutoMigration (
+            from = 3,
+            to = 4,
+            spec = AppDatabase.MyAutoMigration::class
+        )
+    ]
+)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun flashCardDao(): FlashCardDao
+    @RenameTable(fromTableName = "FlashCard", toTableName = "FlashCards")
+    class MyAutoMigration : AutoMigrationSpec {}
+
+}
+

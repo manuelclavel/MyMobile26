@@ -33,16 +33,16 @@ fun HomeScreen(
             onClick = {
                 navigateToStudyCards()
                 })
-        { Text("Study Cards") }
+        { Text("Study Cards", modifier = Modifier.semantics{contentDescription="StudyCards"},) }
         Button(modifier = Modifier.semantics{contentDescription="navigateToAddCard"},
             onClick = {
             navigateToAddCard()
         }) {
-            Text("Add Card")
+            Text("Add Card", modifier = Modifier.semantics{contentDescription="AddCard"},)
         }
         Button(modifier = Modifier.semantics{contentDescription="navigateToSearchCards"},onClick = {
            navigateToSearchCards()
-        }) { Text("Search Cards") }
+        }) { Text("Search Cards", modifier = Modifier.semantics{contentDescription="SearchCards"},) }
 
     }
 }

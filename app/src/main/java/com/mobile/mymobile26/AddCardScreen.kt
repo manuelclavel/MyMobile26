@@ -37,6 +37,7 @@ fun AddCardScreen(
        changeMessage("")
     }
     val messageAddSuccessful = stringResource(id = R.string.add_successful)
+    val messageAddUnSuccessful = stringResource(id = R.string.add_unsuccessful)
 
     Column() {
         TextField(
@@ -51,8 +52,8 @@ fun AddCardScreen(
             modifier = Modifier.semantics { contentDescription = "vnTextField" },
             label = { Text("vn") }
         )
-
         Button(
+            modifier = Modifier.semantics{contentDescription="Add"},
             onClick = {
                 val code = addFlashCard(enWord, vnWord)
                 if (code == 200) {
@@ -61,7 +62,10 @@ fun AddCardScreen(
                     changeMessage(messageAddSuccessful)
                     Log.d("MANU", "Successful")
                 } else if (code == 501) {
+                    changeMessage(messageAddUnSuccessful)
                     Log.d("MANU", "Unsuccessful")
+                } else {
+                    Log.d("MANU", "Unexpected result")
                 }
             })
                 {

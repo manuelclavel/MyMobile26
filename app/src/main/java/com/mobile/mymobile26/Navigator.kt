@@ -1,5 +1,3 @@
-import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,17 +25,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.mobile.com.mobile.mymobile26.FlashCard
-import com.mobile.com.mobile.mymobile26.FlashCardDao
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 
 //@OptIn(ExperimentalMaterial3Api::class)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Navigator(navController: NavHostController, dao: FlashCardDao) {
+fun Navigator(
+    navController: NavHostController,
+    getAllFlashCards: () -> List<FlashCard>,
+    addFlashCard: (String, String) -> Int
+) {
     val navigateToAddCard = fun() {
         navController.navigate("add_card")
     }
@@ -53,57 +50,8 @@ fun Navigator(navController: NavHostController, dao: FlashCardDao) {
         message = text
     }
 
-    val getAllFlashCards =  fun(): List<FlashCard> {
-        var flashCards : List<FlashCard> = emptyList()
-       runBlocking {
-            async {
-                withContext(Dispatchers.IO) {
-                    try {
-                        flashCards = dao.getAll()
-                        Log.d("MANU", flashCards.toString())
-                    } catch (e: SQLiteConstraintException) {
-                        // Handle specific Room exceptions like unique constraint violation
-                        // Log the error or show a user-friendly message
-                        Log.d("MANU", "Error getting flash cards: ${e.message}")
-                    } catch (e: Exception) {
-                        // Catch any other unexpected exceptions
-                        Log.d("MANU", "An unexpected error occurred: ${e.message}")
-                    }
-                }
-            }.await()
-        }
-        return flashCards
-    }
 
-    val addFlashCard =  fun(english:String, vietnamese: String): Int {
-        var code = 0
-        runBlocking {
-            async {
-                withContext(Dispatchers.IO) {
-                    try {
-                        dao.insertAll(
-                            FlashCard(
-                                uid = 0,
-                                englishCard = english,
-                                vietnameseCard = vietnamese
-                            )
-                        )
-                        code = 200
-                    } catch (e: SQLiteConstraintException) {
-                        // Handle specific Room exceptions like unique constraint violation
-                        // Log the error or show a user-friendly message
-                        code = 501
-                        Log.d("MANU", "Error inserting user: ${e.message}")
-                    } catch (e: Exception) {
-                        // Catch any other unexpected exceptions
-                        code = 500
-                        Log.d("MANU", "An unexpected error occurred: ${e.message}")
-                    }
-                }
-            }.await()
-        }
-        return code
-    }
+
     Scaffold(
         topBar = {
             TopAppBar(

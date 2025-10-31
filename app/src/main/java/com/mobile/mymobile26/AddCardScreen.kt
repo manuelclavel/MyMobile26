@@ -32,7 +32,7 @@ fun AddCardScreen(
     val messageAddSuccessful = stringResource(id = R.string.add_successful)
     val messageAddUnSuccessful = stringResource(id = R.string.add_unsuccessful)
 
-    // just a test
+    // just another test
     Column() {
         TextField(
             value = enWord,

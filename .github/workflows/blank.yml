@@ -35,12 +35,17 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          android-version: '30' # Or your desired Android API level
+          build-tools-version: '30.0.3' # Or your desired build tools version
       - name: Start Android Emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
-                api-level: 30 # Or your desired API level
-                target: google_apis # Or your desired target
-                arch: x86_64
+          api-level: 30 # Or your desired API level
+          target: google_apis # Or your desired target
+          arch: x86_64
       - name: Run unit instrumented tests
         run: ./gradlew connectedAndroidTest
 

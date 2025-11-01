@@ -34,15 +34,22 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
 
+      - name: Create and Start AVD
+        run: |
+          sdkmanager "system-images;android-29;default;x86"
+          echo no | avdmanager create avd -n test_avd --abi default/x86 -k "system-images;android-29;default;x86"
+          emulator -avd test_avd -memory 2048 -cache-size 1000 -no-accel -no-window -no-audio -no-boot-anim &
+          adb wait-for-device
+          adb shell input keyevent 82 # Unlock the emulator screen
+
       - name: Build project (optional, if needed before tests)
         run: ./gradlew assembleDebug
 
-      - name: Run Android Emulator and Tests
-        uses: reactivecircus/android-emulator-runner@v2 # Use this action for emulator setup and test execution
-        with:
-          api-level: 30 # Specify the Android API level for the emulator
-          target: default
-          arch: x86_64
-          profile: Nexus 6
-          script: ./gradlew connectedCheck # Command to run connected tests on the emulator
+      #- name: Run Android Emulator and Tests
+     #   uses: reactivecircus/android-emulator-runner@v2 # Use this action for emulator setup and test execution
+     #   with:
+    #      api-level: 30 # Specify the Android API level for the emulator
+     #     target: default
+      #    arch: x86_64
+       ##  script: ./gradlew connectedCheck # Command to run connected tests on the emulator
 

@@ -31,26 +31,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build project (optional, if needed before tests)
+        run: ./gradlew assembleDebug
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+      - name: Run Android Emulator and Tests
+        uses: reactivecircus/android-emulator-runner@v2 # Use this action for emulator setup and test execution
         with:
-          android-version: '30' # Or your desired Android API level
-          build-tools-version: '30.0.3' # Or your desired build tools version
-      - name: Start Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
+          api-level: 30 # Specify the Android API level for the emulator
           target: default
-          arch: x86
+          arch: x86_64
           profile: Nexus 6
-          #  Provide the required 'script' input here
-          script: |
-            ./gradlew connectedCheck 
-              # Or any other commands you need to run on the emulator
-      - name: Run unit instrumented tests
-        run: ./gradlew connectedAndroidTest
+          script: ./gradlew connectedCheck # Command to run connected tests on the emulator
 

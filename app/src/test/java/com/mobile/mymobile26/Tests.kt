@@ -16,17 +16,19 @@ import com.mobile.com.mobile.mymobile26.FlashCard
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-
+@RunWith(RobolectricTestRunner::class)
 class MyComposeTest {
     //This creates a shell activity that doesn't have any pre-set content, allowing your tests to call setContent() to set up the UI for the test.
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    val dummyAddFlashCard =  fun(english:String, vietnamese: String): Int {
+    val dummyAddFlashCard = fun(english: String, vietnamese: String): Int {
         return 0
     }
-    val dummyGetAllFlashCards =  fun(): List<FlashCard> {
+    val dummyGetAllFlashCards = fun(): List<FlashCard> {
         return emptyList()
     }
     val dummyDataManager = DataManager(
@@ -54,19 +56,16 @@ class MyComposeTest {
         }
         assertEquals("home", navController.currentDestination?.route)
     }
-
-    // HomeScreen
-    // type: Navigation
     @Test
     fun clickOnStudyCards() {
         val navController =
-                TestNavHostController(ApplicationProvider.getApplicationContext())
+            TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
             Navigator(navController, dummyDataManager)
         }
-         composeTestRule.runOnUiThread {
+        composeTestRule.runOnUiThread {
             navController.navigate("home")
         }
         composeTestRule.onNodeWithContentDescription("navigateToStudyCards")
@@ -81,7 +80,7 @@ class MyComposeTest {
     @Test
     fun clickOnAddCard() {
         val navController =
-                TestNavHostController(ApplicationProvider.getApplicationContext())
+            TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
@@ -165,11 +164,11 @@ class MyComposeTest {
             )
         }
         composeTestRule.runOnUiThread {
-                navController.navigate("add_card")
+            navController.navigate("add_card")
         }
         composeTestRule.onNodeWithContentDescription("Add")
-                .assertExists()
-                .performClick()
+            .assertExists()
+            .performClick()
 
         composeTestRule.onNodeWithContentDescription("Message")
             .assertExists()
@@ -185,7 +184,7 @@ class MyComposeTest {
         val dummyGetAllFlashCards =  fun(): List<FlashCard> {
             return emptyList()
         }
-        
+
         val dummyDataManager = DataManager(
             addFlashCard = dummyAddFlashCardUnSuccessful,
             getFlashCards = dummyGetAllFlashCards
@@ -228,7 +227,7 @@ class MyComposeTest {
             navController.navigate("home")
         }
         composeTestRule.onNodeWithContentDescription("navigateToAddCard")
-           .performClick();
+            .performClick();
 
         //composeTestRule.onNodeWithText("Back").assertExists().performClick()
         composeTestRule.onNodeWithContentDescription("navigateBack").assertExists().performClick();
@@ -238,7 +237,7 @@ class MyComposeTest {
     // AddCard
     @Test
     fun typeOnEnTextInput() {
-       composeTestRule.setContent {
+        composeTestRule.setContent {
             AddCardScreen(
                 changeMessage = {},
                 dataManager = dummyDataManager
@@ -266,5 +265,4 @@ class MyComposeTest {
         stateRestorationTester.emulateSavedInstanceStateRestore()
         composeTestRule.onNodeWithContentDescription("enTextField").assertTextEquals("en", textInput)
     }
-
 }

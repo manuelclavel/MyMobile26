@@ -10,7 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.mobile.com.mobile.mymobile26.AbstractDataManager
-import com.mobile.com.mobile.mymobile26.AppDatabase
+import com.mobile.com.mobile.mymobile26.AnNamDatabase
 import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardDao
 import com.mobile.mymobile26.ui.theme.MyMobile26Theme
@@ -19,6 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
+/*
 suspend fun getAll(dao: FlashCardDao):List<FlashCard> {
     var flashCards : List<FlashCard> = emptyList()
     withContext(Dispatchers.IO) {
@@ -36,6 +37,7 @@ suspend fun insertAll(dao: FlashCardDao, vararg flashCards: FlashCard) {
         }.await()
     }
 }
+*/
 
 class DataManager(
     override val addFlashCard: (String, String) -> Int,
@@ -51,7 +53,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val db = Room.databaseBuilder(
                 applicationContext,
-                AppDatabase::class.java, "MyMobile26Database"
+                AnNamDatabase::class.java, "MyMobile26Database"
             ).build()
             val flashCardDao = db.flashCardDao()
             val getFlashCards = fun (): List<FlashCard> {

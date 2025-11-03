@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    //id("androidx.room")
     id("com.google.devtools.ksp")
 }
 
@@ -16,7 +15,7 @@ android {
         targetSdk = 36
         versionCode = 27
         versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
     // For Kotlin projects using KSP:
@@ -35,25 +34,37 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
+    //compileOptions {
+    //    sourceCompatibility = JavaVersion.VERSION_17 // Or your desired version
+    //    targetCompatibility = JavaVersion.VERSION_17 // Or your desired version
+    //}
     buildFeatures {
         compose = true
     }
     androidResources {
         generateLocaleConfig = true
     }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21 // Or your desired version
+        targetCompatibility = JavaVersion.VERSION_21 // Or your desired version
+    }
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
         }
     }
+
 }
+
+configurations {
+    create("cleanedAnnotations")
+    implementation {
+        //exclude(group = "org.jetbrains", module = "annotations")
+        exclude(group = "com.intellij", module = "annotations")
+    }
+}
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -66,29 +77,29 @@ dependencies {
     implementation(libs.androidx.navigation.testing)
     implementation(libs.core.ktx)
     implementation(libs.androidx.compose.ui.test.junit4)
+    implementation(libs.androidx.room.compiler)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // androidTestImplementation(libs.androidx.junit)
+    // androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.robolectric)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     // Test rules and transitive dependencies:
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    // androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     // Needed for createComposeRule(), but not for createAndroidComposeRule<YourActivity>():
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    // Test rules and transitive dependencies:
-
+    // Needed for room
     implementation(libs.androidx.room.runtime)
 
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
-    ksp(libs.androidx.room.compiler)
+    //ksp(libs.androidx.room.compiler)
 
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation(libs.androidx.room.ktx)
+    //implementation(libs.androidx.room.ktx)
 
     // optional - Test helpers
-    testImplementation(libs.androidx.room.testing)
-
+    //testImplementation(libs.androidx.room.testing)
+    //testImplementation(kotlin("test"))
 
 }

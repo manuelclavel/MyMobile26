@@ -5,7 +5,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Delete
-import androidx.room.DeleteTable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.Insert
@@ -15,6 +14,8 @@ import androidx.room.RenameTable
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 
+
+data class AnNamDatabaseResult<T>(val code: Int, val result: T)
 
 @Entity(tableName = "FlashCards", indices = [Index(value = ["english_card","vietnamese_card"], unique = true)])
 data class FlashCard(
@@ -76,11 +77,11 @@ abstract class AppDatabase : RoomDatabase() {
         AutoMigration (
             from = 3,
             to = 4,
-            spec = AppDatabase.MyAutoMigration::class
+            spec = AnNamDatabase.MyAutoMigration::class
         )
     ]
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class AnNamDatabase : RoomDatabase() {
     abstract fun flashCardDao(): FlashCardDao
     @RenameTable(fromTableName = "FlashCard", toTableName = "FlashCards")
     class MyAutoMigration : AutoMigrationSpec {}

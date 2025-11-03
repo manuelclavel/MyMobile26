@@ -2,6 +2,7 @@ package com.mobile.mymobile26
 
 
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.mobile.com.mobile.mymobile26.AnNamDatabase
@@ -45,10 +46,13 @@ class DaoTest {
                 englishCard = "test_english",
                 vietnameseCard = "test_vietnamese"
             )
+
+        var result = FlashCard(0, "", "")
+
         runBlocking {
             flashCardDao.insertAll(flashCard)
         }
-        var result = FlashCard(0, "", "")
+
         runBlocking {
             result = flashCardDao.findByCards("test_english", "test_vietnamese")
         }
@@ -57,28 +61,26 @@ class DaoTest {
     }
 
     @Test
-    fun insertFlashCardUnsuccessful() {
+    fun insertFlashCardUSuccessful() {
         val flashCard =
             FlashCard(
                 uid = 0,
                 englishCard = "test_english",
                 vietnameseCard = "test_vietnamese"
             )
-        runBlocking {
-            flashCardDao.insertAll(flashCard)
-        }
 
-        var result = FlashCard(0, "", "")
-
-        runBlocking {
-            flashCardDao.insertAll(flashCard)
+            runBlocking {
+                flashCardDao.insertAll(flashCard)
+            }
+            var error = false
+            runBlocking {
+            try {
+                flashCardDao.insertAll(flashCard)
+            } catch (e: SQLiteConstraintException){
+                error = true
+            }
         }
-
-        runBlocking {
-            result = flashCardDao.findByCards("test_english", "test_vietnamese")
-        }
-        Assert.assertEquals(result.englishCard, flashCard.englishCard)
-        Assert.assertEquals(result.vietnameseCard, flashCard.vietnameseCard)
+        Assert.assertEquals(true, error)
     }
 }
 

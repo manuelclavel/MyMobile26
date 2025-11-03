@@ -15,8 +15,6 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
 
 
-data class AnNamDatabaseResult<T>(val code: Int, val result: T)
-
 @Entity(tableName = "FlashCards", indices = [Index(value = ["english_card","vietnamese_card"], unique = true)])
 data class FlashCard(
     @PrimaryKey(autoGenerate = true) val uid: Int,
@@ -85,6 +83,5 @@ abstract class AnNamDatabase : RoomDatabase() {
     abstract fun flashCardDao(): FlashCardDao
     @RenameTable(fromTableName = "FlashCard", toTableName = "FlashCards")
     class MyAutoMigration : AutoMigrationSpec {}
-
 }
 

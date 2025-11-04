@@ -16,6 +16,7 @@ navigationTesting = "2.9.5"
 robolectric = "4.16"
 roomVersion = "2.8.3"
 coreKtxVersion = "1.7.0"
+ui = "1.9.4"
 
 
 [libraries]
@@ -38,6 +39,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigationTesting" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

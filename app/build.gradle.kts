@@ -60,7 +60,7 @@ android {
 configurations {
     create("cleanedAnnotations")
     implementation {
-        //exclude(group = "org.jetbrains", module = "annotations")
+//        //exclude(group = "org.jetbrains", module = "annotations")
         exclude(group = "com.intellij", module = "annotations")
     }
 }
@@ -78,28 +78,27 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.compose.ui.test.junit4)
     implementation(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.compose.ui)
     testImplementation(libs.junit)
-    // androidTestImplementation(libs.androidx.junit)
-    // androidTestImplementation(libs.androidx.espresso.core)
     testImplementation(libs.robolectric)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-
-    // Test rules and transitive dependencies:
-    // androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     // Needed for createComposeRule(), but not for createAndroidComposeRule<YourActivity>():
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    // Needed for room
-    implementation(libs.androidx.room.runtime)
 
+    // androidTestImplementation(libs.androidx.junit)
+    // androidTestImplementation(libs.androidx.espresso.core)
+    // androidTestImplementation(platform(libs.androidx.compose.bom))
+    // Test rules and transitive dependencies:
+    // androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
-    //ksp(libs.androidx.room.compiler)
+    // ksp(libs.androidx.room.compiler)
 
     // optional - Kotlin Extensions and Coroutines support for Room
-    //implementation(libs.androidx.room.ktx)
+    // implementation(libs.androidx.room.ktx)
 
     // optional - Test helpers
-    //testImplementation(libs.androidx.room.testing)
-    //testImplementation(kotlin("test"))
+    // testImplementation(libs.androidx.room.testing)
+    // testImplementation(kotlin("test"))
 
 }

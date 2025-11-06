@@ -14,6 +14,7 @@ import com.mobile.com.mobile.mymobile26.AbstractDataManager
 import com.mobile.com.mobile.mymobile26.AnNamDatabase
 import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardRepository
+import com.mobile.com.mobile.mymobile26.FlashCardResourceProvider
 import com.mobile.com.mobile.mymobile26.ui.FlashCardViewModel
 import com.mobile.mymobile26.ui.theme.MyMobile26Theme
 import kotlinx.coroutines.Deferred
@@ -59,6 +60,9 @@ class MainActivity : ComponentActivity() {
             val viewModel = FlashCardViewModel(
                 repository = FlashCardRepository(
                     flashCardDao = flashCardDao
+                ),
+                resourceProvider = FlashCardResourceProvider(
+                    context = applicationContext
                 )
             )
             //runBlocking {

@@ -45,14 +45,22 @@ fun Navigator(
     val navigateToSearchCards = fun() {
         navController.navigate("search_cards")
     }
-    //var message by rememberSaveable { mutableStateOf("") }
 
     val changeMessage = fun (text:String){
         flashCardViewModel.updateCurrentMessage(text)
     }
-    val insertFlashCard = fun (flashCard: FlashCard){
+    val updateAddEnWord = fun (text:String){
+        flashCardViewModel.updateAddEnWord(text)
+        }
+    val updateAddVnWord = fun (text:String){
+        flashCardViewModel.updateAddVnWord(text)
+    }
+
+
+    val insertFlashCard = fun (flashCard: FlashCard) {
         flashCardViewModel.insertFlashCard(flashCard)
     }
+
     val flashCards: List<FlashCard>
     by flashCardViewModel.allFlashCards.collectAsStateWithLifecycle()
 
@@ -123,6 +131,10 @@ fun Navigator(
             composable(route = "add_card") {
                 AddCardScreen(
                     changeMessage = changeMessage,
+                    enWord = flashCardUiState.currentEnWord,
+                    vnWord = flashCardUiState.currentVnWord,
+                    updateAddEnWord = updateAddEnWord,
+                    updateAddVnWord = updateAddVnWord,
                     insertFlashCard = insertFlashCard
                 )
             }

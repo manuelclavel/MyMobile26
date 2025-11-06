@@ -190,8 +190,7 @@ class MyComposeTest {
     fun typeOnEnTextInput() {
         composeTestRule.setContent {
             AddCardScreen(
-                changeMessage = {},
-                dataManager = dummyDataManager,
+                changeMessage = {},,,
             )
         }
         val textInput = "house"
@@ -205,8 +204,7 @@ class MyComposeTest {
         val stateRestorationTester = StateRestorationTester(composeTestRule)
         stateRestorationTester.setContent {
             AddCardScreen(
-                changeMessage = {},
-                dataManager = dummyDataManager,
+                changeMessage = {},,,
             )
         }
         val textInput = "house"

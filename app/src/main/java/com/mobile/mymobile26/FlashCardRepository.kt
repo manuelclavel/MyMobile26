@@ -1,6 +1,6 @@
 package com.mobile.com.mobile.mymobile26
 
-import androidx.lifecycle.LiveData
+import android.database.sqlite.SQLiteConstraintException
 import kotlinx.coroutines.flow.Flow
 
 class FlashCardRepository(private val flashCardDao: FlashCardDao) {
@@ -10,7 +10,16 @@ class FlashCardRepository(private val flashCardDao: FlashCardDao) {
     val allFlashCards: Flow<List<FlashCard>> = flashCardDao.getAll()
 
     suspend fun insert(flashCard: FlashCard) {
-        flashCardDao.insert(flashCard)
+        try {
+            flashCardDao.insert(flashCard)
+        } catch (e: SQLiteConstraintException) {
+           throw SQLiteConstraintException(e.message)
+            //Log.d("AnNam", "Error getting flash cards: ${e.message}")
+        } catch (e: Exception) {
+            throw Exception(e.message)
+            //Log.d("AnNam", "Error getting flash cards: ${e.message}")
+        }
+
     }
 
     suspend fun delete(flashCard: FlashCard) {

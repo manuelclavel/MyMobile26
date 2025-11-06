@@ -15,7 +15,7 @@ android {
         targetSdk = 36
         versionCode = 27
         versionName = "1.0"
-        //testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
     }
     // For Kotlin projects using KSP:
@@ -57,13 +57,13 @@ android {
 
 }
 
-configurations {
-    create("cleanedAnnotations")
-    implementation {
+//configurations {
+//    create("cleanedAnnotations")
+//    implementation {
 //        //exclude(group = "org.jetbrains", module = "annotations")
-        exclude(group = "com.intellij", module = "annotations")
-    }
-}
+//        exclude(group = "com.intellij", module = "annotations")
+//    }
+//}
 
 
 dependencies {
@@ -77,28 +77,40 @@ dependencies {
     implementation(libs.androidx.navigation.testing)
     implementation(libs.core.ktx)
     implementation(libs.androidx.compose.ui.test.junit4)
-    implementation(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.runtime)
+
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.test)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     testImplementation(libs.junit)
+    // For local unit tests
+    testImplementation(libs.androidx.core.testing)
     testImplementation(libs.robolectric)
     // Needed for createComposeRule(), but not for createAndroidComposeRule<YourActivity>():
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // androidTestImplementation(libs.androidx.junit)
-    // androidTestImplementation(libs.androidx.espresso.core)
-    // androidTestImplementation(platform(libs.androidx.compose.bom))
+    //androidTestImplementation(libs.androidx.junit)
+    //androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     // Test rules and transitive dependencies:
-    // androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    /* Dependencies related to room */
+    // room-compiler: is for the code generation that happens
+    // during the build process to create the necessary database
+    // infrastructure based on your annotations.
+
+    //implementation(libs.androidx.room.compiler)
+    // room-runtime: is for the code that runs on
+    // your device to interact with the database.
+    implementation(libs.androidx.room.runtime)
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
-    // ksp(libs.androidx.room.compiler)
-
+    ksp(libs.androidx.room.compiler)
     // optional - Kotlin Extensions and Coroutines support for Room
-    // implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.ktx)
+    // optional - Test helper
+    testImplementation(libs.androidx.room.testing)
 
-    // optional - Test helpers
-    // testImplementation(libs.androidx.room.testing)
-    // testImplementation(kotlin("test"))
-
+    /* Dependencies relates to viewmode */
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

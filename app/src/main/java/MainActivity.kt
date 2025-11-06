@@ -7,13 +7,16 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.mobile.com.mobile.mymobile26.AbstractDataManager
 import com.mobile.com.mobile.mymobile26.AnNamDatabase
 import com.mobile.com.mobile.mymobile26.FlashCard
-import com.mobile.com.mobile.mymobile26.FlashCardDao
+import com.mobile.com.mobile.mymobile26.FlashCardRepository
+import com.mobile.com.mobile.mymobile26.ui.FlashCardViewModel
 import com.mobile.mymobile26.ui.theme.MyMobile26Theme
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -39,10 +42,6 @@ suspend fun insertAll(dao: FlashCardDao, vararg flashCards: FlashCard) {
 }
 */
 
-class DataManager(
-    override val addFlashCard: (String, String) -> Int,
-    override val getFlashCards: () -> List<FlashCard>
-) : AbstractDataManager()
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,65 +54,72 @@ class MainActivity : ComponentActivity() {
                 applicationContext,
                 AnNamDatabase::class.java, "MyMobile26Database"
             ).build()
-            val flashCardDao = db.flashCardDao()
-            val getFlashCards = fun (): List<FlashCard> {
-                var flashCards : List<FlashCard> = emptyList()
-                runBlocking {
-                    async {
-                        withContext(Dispatchers.IO) {
-                            try {
-                                flashCards = flashCardDao.getAll()
-                                Log.d("MANU", flashCards.toString())
-                            } catch (e: SQLiteConstraintException) {
-                                // Handle specific Room exceptions like unique constraint violation
-                                // Log the error or show a user-friendly message
-                                Log.d("MANU", "Error getting flash cards: ${e.message}")
-                            } catch (e: Exception) {
-                                // Catch any other unexpected exceptions
-                                Log.d("MANU", "An unexpected error occurred: ${e.message}")
-                            }
-                        }
-                    }.await()
-                }
-                return flashCards
-            }
-            val addFlashCard = fun (english :String, vietnamese: String): Int {
-                var code = 0
-                runBlocking {
-                    async {
-                        withContext(Dispatchers.IO) {
-                            try {
-                                flashCardDao.insertAll(
-                                    FlashCard(
-                                        uid = 0,
-                                        englishCard = english,
-                                        vietnameseCard = vietnamese
-                                    )
-                                )
-                                code = 200
-                            } catch (e: SQLiteConstraintException) {
-                                // Handle specific Room exceptions like unique constraint violation
-                                // Log the error or show a user-friendly message
-                                code = 501
-                                Log.d("MANU", "Error inserting user: ${e.message}")
-                            } catch (e: Exception) {
-                                // Catch any other unexpected exceptions
-                                code = 500
-                                Log.d("MANU", "An unexpected error occurred: ${e.message}")
-                            }
-                        }
-                    }.await()
-                }
-                return code
-            }
 
-            val dataManager = DataManager(
-                addFlashCard = addFlashCard,
-                getFlashCards = getFlashCards
+            val flashCardDao = db.flashCardDao()
+            val viewModel = FlashCardViewModel(
+                repository = FlashCardRepository(
+                    flashCardDao = flashCardDao
+                )
             )
+            //runBlocking {
+                //flashCardDao.insertAll(FlashCard(
+                //    uid = 0,
+                //    englishCard = "test16",
+                //    vietnameseCard = "test17"
+                //))
+            //    val flashCards = flashCardDao.getAll()
+            //    Log.d("AnNam", flashCards.toString())
+            //}
+
+            //val getFlashCards = fun (): List<FlashCard> {
+            //    var flashCards : List<FlashCard> = emptyList()
+            //    runBlocking {
+            //        async {
+            //            withContext(Dispatchers.IO) {
+            //                try {
+            //                    flashCards = flashCardDao.getAll()
+            //                    Log.d("MANU", flashCards.toString())
+            //                } catch (e: SQLiteConstraintException) {
+                                // Handle specific Room exceptions like unique constraint violation
+                                // Log the error or show a user-friendly message
+            //                    Log.d("MANU", "Error getting flash cards: ${e.message}")
+            //                } catch (e: Exception) {
+                                // Catch any other unexpected exceptions
+            //                    Log.d("MANU", "An unexpected error occurred: ${e.message}")
+            //                }
+            //            }
+            //        }.await()
+            //    }
+            //    return flashCards
+            //}
+            //val scope = rememberCoroutineScope()
+
+            //val addFlashCard = fun(english: String, vietnamese: String, result: (Int)-> Unit): Unit {
+            //    scope.async {
+            //        try {
+            //            flashCardDao.insert(
+            //                FlashCard(
+            //                    uid = 0,
+            //                    englishCard = english,
+            //                    vietnameseCard = vietnamese
+            //                )
+            //            )
+            //            result(200)
+            //        } catch (e: SQLiteConstraintException) {
+                        // Handle specific Room exceptions like unique constraint violation
+                        // Log the error or show a user-friendly message
+            //            result(501)
+            //            Log.d("MANU", "Error inserting user: ${e.message}")
+            //        } catch (e: Exception) {
+                        // Catch any other unexpected exceptions
+            //            result(500)
+            //            Log.d("MANU", "An unexpected error occurred: ${e.message}")
+            //        }
+            //    }
+            //}
 
             MyMobile26Theme {
-                Navigator(navController, dataManager)
+                Navigator(navController, viewModel)
             }
         }
     }

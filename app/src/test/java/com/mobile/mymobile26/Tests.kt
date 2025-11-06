@@ -2,6 +2,7 @@ package com.mobile.mymobile26
 
 import AddCardScreen
 import Navigator
+import android.content.Context
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -10,19 +11,25 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.mobile.DataManager
+import com.mobile.com.mobile.mymobile26.AnNamDatabase
 import com.mobile.com.mobile.mymobile26.FlashCard
+import com.mobile.com.mobile.mymobile26.FlashCardDao
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
+
 @RunWith(RobolectricTestRunner::class)
 class MyComposeTest {
     //This creates a shell activity that doesn't have any pre-set content, allowing your tests to call setContent() to set up the UI for the test.
     @get:Rule
+    //val instantTaskExecutorRule = InstantTaskExecutorRule()
     val composeTestRule = createComposeRule()
 
     val dummyAddFlashCard = fun(english: String, vietnamese: String): Int {
@@ -35,6 +42,17 @@ class MyComposeTest {
         addFlashCard = dummyAddFlashCard,
         getFlashCards = dummyGetAllFlashCards
     )
+
+    private lateinit var db: AnNamDatabase
+    private lateinit var flashCardDao: FlashCardDao
+
+    @Before
+    fun createDb() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        db = Room.inMemoryDatabaseBuilder(
+            context, AnNamDatabase::class.java).build()
+        flashCardDao = db.flashCardDao()
+    }
 
     //val navController =
     //    TestNavHostController(ApplicationProvider.getApplicationContext())
@@ -142,73 +160,6 @@ class MyComposeTest {
 
     // AddCardScren
     // type: Logic
-    @Test
-    fun clickOnAddCardSuccessful() {
-        val dummyAddFlashCardSuccessful =  fun(english:String, vietnamese: String): Int {
-            return 200
-        }
-        val dummyGetAllFlashCards =  fun(): List<FlashCard> {
-            return emptyList()
-        }
-        val dummyDataManager = DataManager(
-            addFlashCard = dummyAddFlashCardSuccessful,
-            getFlashCards = dummyGetAllFlashCards
-        )
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.navigatorProvider.addNavigator(ComposeNavigator())
-
-        composeTestRule.setContent {
-            Navigator(
-                navController = navController,
-                dataManager = dummyDataManager,
-            )
-        }
-        composeTestRule.runOnUiThread {
-            navController.navigate("add_card")
-        }
-        composeTestRule.onNodeWithContentDescription("Add")
-            .assertExists()
-            .performClick()
-
-        composeTestRule.onNodeWithContentDescription("Message")
-            .assertExists()
-            .assertTextEquals("Flash card successfully added to your database.")
-    }
-    // AddCardScren
-    // type: Logic
-    @Test
-    fun clickOnAddCardUnSuccessful() {
-        val dummyAddFlashCardUnSuccessful =  fun(english:String, vietnamese: String): Int {
-            return 501
-        }
-        val dummyGetAllFlashCards =  fun(): List<FlashCard> {
-            return emptyList()
-        }
-
-        val dummyDataManager = DataManager(
-            addFlashCard = dummyAddFlashCardUnSuccessful,
-            getFlashCards = dummyGetAllFlashCards
-        )
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.navigatorProvider.addNavigator(ComposeNavigator())
-
-        composeTestRule.setContent {
-            Navigator(
-                navController = navController,
-                dataManager = dummyDataManager
-            )
-        }
-        composeTestRule.runOnUiThread {
-            navController.navigate("add_card")
-        }
-        composeTestRule.onNodeWithContentDescription("Add")
-            .assertExists()
-            .performClick()
-
-        composeTestRule.onNodeWithContentDescription("Message")
-            .assertExists()
-            .assertTextEquals("Flash card already exists in your database.")
-    }
 
 
     // AddCard
@@ -240,7 +191,7 @@ class MyComposeTest {
         composeTestRule.setContent {
             AddCardScreen(
                 changeMessage = {},
-                dataManager = dummyDataManager
+                dataManager = dummyDataManager,
             )
         }
         val textInput = "house"
@@ -255,7 +206,7 @@ class MyComposeTest {
         stateRestorationTester.setContent {
             AddCardScreen(
                 changeMessage = {},
-                dataManager = dummyDataManager
+                dataManager = dummyDataManager,
             )
         }
         val textInput = "house"
@@ -264,5 +215,76 @@ class MyComposeTest {
         // Simulate a config change.
         stateRestorationTester.emulateSavedInstanceStateRestore()
         composeTestRule.onNodeWithContentDescription("enTextField").assertTextEquals("en", textInput)
+    }
+
+    @Test
+    fun clickOnAddCardSuccessful() {
+        val dummyAddFlashCardSuccessful = fun(english: String, vietnamese: String): Int {
+            return 200
+        }
+        val dummyGetAllFlashCards = fun(): List<FlashCard> {
+            return emptyList()
+        }
+        val dummyDataManager = DataManager(
+            addFlashCard = dummyAddFlashCardSuccessful,
+            getFlashCards = dummyGetAllFlashCards
+        )
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+
+        composeTestRule.setContent {
+            Navigator(
+                navController = navController,
+                dataManager = dummyDataManager
+            )
+        }
+        composeTestRule.runOnUiThread {
+            navController.navigate("add_card")
+        }
+        composeTestRule.onNodeWithContentDescription("Add")
+                .assertExists()
+                .performClick()
+
+        composeTestRule.onNodeWithContentDescription("Message")
+            .assertExists()
+            .assertTextEquals("Flash card successfully added to your database.")
+
+    }
+    // AddCardScren
+    // type: Logic
+
+    @Test
+    fun clickOnAddCardUnSuccessful() {
+        val dummyAddFlashCardUnSuccessful =  fun(english:String, vietnamese: String): Int {
+            return 501
+        }
+        val dummyGetAllFlashCards =  fun(): List<FlashCard> {
+            return emptyList()
+        }
+
+        val dummyDataManager = DataManager(
+            addFlashCard = dummyAddFlashCardUnSuccessful,
+            getFlashCards = dummyGetAllFlashCards
+        )
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+
+        composeTestRule.setContent {
+            Navigator(
+                navController = navController,
+                dataManager = dummyDataManager
+            )
+        }
+        composeTestRule.runOnUiThread {
+            navController.navigate("add_card")
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add")
+            .assertExists()
+            .performClick()
+
+        composeTestRule.onNodeWithContentDescription("Message")
+            .assertExists()
+            .assertTextEquals("Flash card already exists in your database.")
     }
 }

@@ -50,11 +50,11 @@ class DaoTest {
         var result = FlashCard(0, "", "")
 
         runBlocking {
-            flashCardDao.insertAll(flashCard)
+            flashCardDao.insert(flashCard)
         }
 
         runBlocking {
-            result = flashCardDao.findByCards("test_english", "test_vietnamese")
+            result = flashCardDao.findByCard("test_english", "test_vietnamese")
         }
         Assert.assertEquals(result.englishCard, flashCard.englishCard)
         Assert.assertEquals(result.vietnameseCard, flashCard.vietnameseCard)
@@ -70,12 +70,12 @@ class DaoTest {
             )
 
             runBlocking {
-                flashCardDao.insertAll(flashCard)
+                flashCardDao.insert(flashCard)
             }
             var error = false
             runBlocking {
             try {
-                flashCardDao.insertAll(flashCard)
+                flashCardDao.insert(flashCard)
             } catch (e: SQLiteConstraintException){
                 error = true
             }

@@ -11,20 +11,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.mobile.DataManager
+import com.mobile.com.mobile.mymobile26.FlashCard
+import com.mobile.com.mobile.mymobile26.ui.FlashCardViewModel
 
 
 //@OptIn(ExperimentalMaterial3Api::class)
@@ -32,8 +32,10 @@ import com.mobile.DataManager
 @Composable
 fun Navigator(
     navController: NavHostController,
-    dataManager: DataManager
+    flashCardViewModel: FlashCardViewModel
 ) {
+    val flashCardUiState by flashCardViewModel.uiState.collectAsState()
+
     val navigateToAddCard = fun() {
         navController.navigate("add_card")
     }
@@ -43,12 +45,16 @@ fun Navigator(
     val navigateToSearchCards = fun() {
         navController.navigate("search_cards")
     }
-    var message by rememberSaveable { mutableStateOf("") }
+    //var message by rememberSaveable { mutableStateOf("") }
 
     val changeMessage = fun (text:String){
-        message = text
+        flashCardViewModel.updateCurrentMessage(text)
     }
-
+    val insertFlashCard = fun (flashCard: FlashCard){
+        flashCardViewModel.insertFlashCard(flashCard)
+    }
+    val flashCards: List<FlashCard>
+    by flashCardViewModel.allFlashCards.collectAsStateWithLifecycle()
 
 
     Scaffold(
@@ -93,7 +99,7 @@ fun Navigator(
                                 contentDescription = "Message"
                             },
                         textAlign = TextAlign.Center,
-                        text = message
+                        text = flashCardUiState.currentMessage
                     )
                 })
         }
@@ -117,7 +123,7 @@ fun Navigator(
             composable(route = "add_card") {
                 AddCardScreen(
                     changeMessage = changeMessage,
-                    dataManager = dataManager
+                    insertFlashCard = insertFlashCard
                 )
             }
             // STUDY CARDS
@@ -128,7 +134,7 @@ fun Navigator(
             // SEARCH CARDS
             composable(route = "search_cards") {
                 SearchCardsScreen(
-                    dataManager =  dataManager
+                    flashCards = flashCards
                 )
             }
         }

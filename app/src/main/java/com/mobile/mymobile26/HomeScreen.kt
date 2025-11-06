@@ -3,7 +3,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -15,10 +15,13 @@ fun HomeScreen(
     navigateToAddCard: () -> Unit,
     navigateToStudyCards: () -> Unit,
     navigateToSearchCards: () -> Unit,
-    changeMessage: (String) -> Unit,
+    changeMessage: (String) -> Unit
+    //currentMessage: String,
 ) {
-    val scope = rememberCoroutineScope()
-    changeMessage("Copyright © Mobile Programming, 2025")
+    LaunchedEffect(Unit) {
+        changeMessage("Please, select an option.")
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),

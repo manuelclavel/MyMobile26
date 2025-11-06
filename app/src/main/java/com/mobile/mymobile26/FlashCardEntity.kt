@@ -1,5 +1,6 @@
 package com.mobile.com.mobile.mymobile26
 
+import androidx.lifecycle.LiveData
 import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Dao
@@ -13,32 +14,40 @@ import androidx.room.Query
 import androidx.room.RenameTable
 import androidx.room.RoomDatabase
 import androidx.room.migration.AutoMigrationSpec
+import kotlinx.coroutines.flow.Flow
 
 
-@Entity(tableName = "FlashCards", indices = [Index(value = ["english_card","vietnamese_card"], unique = true)])
+@Entity(tableName = "FlashCards", indices = [Index(value = ["english_card","vietnamese_card"],
+    unique = true)])
 data class FlashCard(
     @PrimaryKey(autoGenerate = true) val uid: Int,
     @ColumnInfo(name = "english_card") val englishCard: String?,
-    @ColumnInfo(name = "vietnamese_card") val vietnameseCard: String?
+    @ColumnInfo(name = "vietnamese_card") val vietnameseCard: String?,
 )
 
 @Dao
 interface FlashCardDao {
-    @Query("SELECT * FROM FlashCards")
-    suspend fun getAll(): List<FlashCard>
+    //Define your Room DAO method to return LiveData<List<YourEntity>>.
+    // Room automatically handles updating this LiveData
+    // when the underlying database data changes.
 
-    @Query("SELECT * FROM FlashCards WHERE uid IN (:flashCardIds)")
-    suspend fun loadAllByIds(flashCardIds: IntArray): List<FlashCard>
+    @Query("SELECT * FROM FlashCards")
+    fun getAll(): Flow<List<FlashCard>>
 
     @Query("SELECT * FROM FlashCards WHERE english_card LIKE :english AND " +
             "vietnamese_card LIKE :vietnamese LIMIT 1")
-    suspend fun findByCards(english: String, vietnamese: String): FlashCard
+    suspend  fun findByCard(english: String, vietnamese: String): FlashCard
 
     @Insert
-    suspend fun insertAll(vararg flashCard: FlashCard)
+    suspend fun insert(flashCard: FlashCard)
 
     @Delete
-    fun delete(flashCard: FlashCard)
+    suspend fun delete(flashCard: FlashCard)
+}
+
+@Database(entities = [FlashCard::class], version = 1)
+abstract class AnNamDatabaseTest : RoomDatabase() {
+    abstract fun flashCardDaoTest(): FlashCardDao
 }
 
 // Database class after the version update.
@@ -84,4 +93,3 @@ abstract class AnNamDatabase : RoomDatabase() {
     @RenameTable(fromTableName = "FlashCard", toTableName = "FlashCards")
     class MyAutoMigration : AutoMigrationSpec {}
 }
-

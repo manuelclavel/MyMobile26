@@ -6,6 +6,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.R
+import com.mobile.com.mobile.mymobile26.AbstractRepository
 import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardRepository
 import com.mobile.com.mobile.mymobile26.FlashCardResourceProvider
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 
 class FlashCardViewModel(
     private val resourceProvider: FlashCardResourceProvider,
-    private val repository: FlashCardRepository): ViewModel() {
+    private val repository: AbstractRepository
+): ViewModel() {
 
     fun getMessageAddSuccessful(): String {
        return resourceProvider.getString(R.string.add_successful)

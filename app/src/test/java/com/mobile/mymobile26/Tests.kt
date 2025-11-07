@@ -1,8 +1,7 @@
 package com.mobile.mymobile26
 
-import AddCardScreen
 import Navigator
-import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -11,18 +10,40 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import com.mobile.DataManager
-import com.mobile.com.mobile.mymobile26.AnNamDatabase
+import com.mobile.com.mobile.mymobile26.AbstractRepository
 import com.mobile.com.mobile.mymobile26.FlashCard
-import com.mobile.com.mobile.mymobile26.FlashCardDao
+import com.mobile.com.mobile.mymobile26.FlashCardResourceProvider
+import com.mobile.com.mobile.mymobile26.ui.FlashCardViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+
+
+class DummyRepository(override val allFlashCards: StateFlow<List<FlashCard>>) : AbstractRepository() {
+    override suspend fun insert(flashCard: FlashCard) {
+    }
+    override suspend fun delete(flashCard: FlashCard) {
+    }
+}
+class DummyRepositoryInsertSuccessful(override val allFlashCards: StateFlow<List<FlashCard>>) : AbstractRepository() {
+    override suspend fun insert(flashCard: FlashCard) {
+    }
+    override suspend fun delete(flashCard: FlashCard) {
+    }
+}
+
+class DummyRepositoryInsertUnSuccessful(override val allFlashCards: StateFlow<List<FlashCard>>) : AbstractRepository() {
+    override suspend fun insert(flashCard: FlashCard) {
+        throw SQLiteConstraintException()
+    }
+    override suspend fun delete(flashCard: FlashCard) {
+    }
+}
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -32,27 +53,20 @@ class MyComposeTest {
     //val instantTaskExecutorRule = InstantTaskExecutorRule()
     val composeTestRule = createComposeRule()
 
-    val dummyAddFlashCard = fun(english: String, vietnamese: String): Int {
-        return 0
-    }
-    val dummyGetAllFlashCards = fun(): List<FlashCard> {
-        return emptyList()
-    }
-    val dummyDataManager = DataManager(
-        addFlashCard = dummyAddFlashCard,
-        getFlashCards = dummyGetAllFlashCards
+
+    //private lateinit var db: AnNamDatabase
+    //private lateinit var flashCardDao: FlashCardDao
+
+
+
+    val dummyRepositoryInsertSuccessful = DummyRepositoryInsertSuccessful(
+        allFlashCards = MutableStateFlow(emptyList<FlashCard>())
     )
 
-    private lateinit var db: AnNamDatabase
-    private lateinit var flashCardDao: FlashCardDao
+    val dummyRepositoryInsertUnSuccessful = DummyRepositoryInsertUnSuccessful(
+        allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+    )
 
-    @Before
-    fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(
-            context, AnNamDatabase::class.java).build()
-        flashCardDao = db.flashCardDao()
-    }
 
     //val navController =
     //    TestNavHostController(ApplicationProvider.getApplicationContext())
@@ -63,25 +77,46 @@ class MyComposeTest {
     // type: Navigation
     @Test
     fun homeStartDestination() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
         val navController =
             TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
         composeTestRule.setContent {
             Navigator(
                 navController = navController,
-                dataManager = dummyDataManager
+                flashCardViewModel = flashCardViewModel
             )
         }
         assertEquals("home", navController.currentDestination?.route)
     }
+
     @Test
     fun clickOnStudyCards() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
         val navController =
             TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
-            Navigator(navController, dummyDataManager)
+            Navigator(navController, flashCardViewModel)
         }
         composeTestRule.runOnUiThread {
             navController.navigate("home")
@@ -97,12 +132,22 @@ class MyComposeTest {
 
     @Test
     fun clickOnAddCard() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
         val navController =
             TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
-            Navigator(navController, dummyDataManager)
+            Navigator(navController, flashCardViewModel)
         }
         composeTestRule.runOnUiThread {
             navController.navigate("home")
@@ -118,11 +163,21 @@ class MyComposeTest {
     // type: Navigation
     @Test
     fun clickOnSearchCards() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
-            Navigator(navController, dummyDataManager)
+            Navigator(navController, flashCardViewModel)
         }
         composeTestRule.runOnUiThread {
             navController.navigate("home")
@@ -137,6 +192,16 @@ class MyComposeTest {
     // home
     @Test
     fun homeScreenRetained_afterConfigChange() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
         val stateRestorationTester = StateRestorationTester(composeTestRule)
         /*
         The StateRestorationTester class is used to test the state restoration for composable components without recreating activities.
@@ -148,7 +213,7 @@ class MyComposeTest {
 
         // Set content through the StateRestorationTester object.
         stateRestorationTester.setContent {
-            Navigator(navController, dummyDataManager)
+            Navigator(navController, flashCardViewModel)
         }
         composeTestRule.runOnUiThread {
             navController.navigate("home")
@@ -166,12 +231,22 @@ class MyComposeTest {
     // type: navigation-back
     @Test
     fun clickOnAddCardAndBack() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
 
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
-            Navigator(navController, dummyDataManager)
+            Navigator(navController, flashCardViewModel)
 
         }
         composeTestRule.runOnUiThread {
@@ -185,28 +260,65 @@ class MyComposeTest {
         assertEquals("home", navController.currentDestination?.route)
     }
 
+
     // AddCard
     @Test
     fun typeOnEnTextInput() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+
         composeTestRule.setContent {
-            AddCardScreen(
-                changeMessage = {},,,
-            )
+            Navigator(navController, flashCardViewModel)
         }
+        composeTestRule.runOnUiThread {
+            navController.navigate("home")
+        }
+        composeTestRule.onNodeWithContentDescription("navigateToAddCard")
+            .performClick();
+
         val textInput = "house"
-        composeTestRule.onNodeWithContentDescription("enTextField").assertExists().performTextInput(textInput)
-        composeTestRule.onNodeWithContentDescription("enTextField").assertTextEquals("en", textInput)
+        composeTestRule.onNodeWithContentDescription("enTextField").assertExists()
+            .performTextInput(textInput)
+        composeTestRule.onNodeWithContentDescription("enTextField")
+            .assertTextEquals("en", textInput)
     }
 
     // AddCard
     @Test
     fun keepEnglishStringAfterRotation() {
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepository(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.navigatorProvider.addNavigator(ComposeNavigator())
+
         val stateRestorationTester = StateRestorationTester(composeTestRule)
         stateRestorationTester.setContent {
-            AddCardScreen(
-                changeMessage = {},,,
-            )
+            Navigator(navController, flashCardViewModel)
         }
+        composeTestRule.runOnUiThread {
+            navController.navigate("home")
+        }
+        composeTestRule.onNodeWithContentDescription("navigateToAddCard")
+            .performClick();
+
         val textInput = "house"
         composeTestRule.onNodeWithContentDescription("enTextField").assertExists().performTextInput(textInput)
 
@@ -215,30 +327,35 @@ class MyComposeTest {
         composeTestRule.onNodeWithContentDescription("enTextField").assertTextEquals("en", textInput)
     }
 
+
     @Test
     fun clickOnAddCardSuccessful() {
-        val dummyAddFlashCardSuccessful = fun(english: String, vietnamese: String): Int {
-            return 200
-        }
-        val dummyGetAllFlashCards = fun(): List<FlashCard> {
-            return emptyList()
-        }
-        val dummyDataManager = DataManager(
-            addFlashCard = dummyAddFlashCardSuccessful,
-            getFlashCards = dummyGetAllFlashCards
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
         )
+        val dummyRepository = DummyRepositoryInsertSuccessful(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
+        )
+
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
 
         composeTestRule.setContent {
             Navigator(
                 navController = navController,
-                dataManager = dummyDataManager
+                flashCardViewModel = flashCardViewModel
             )
         }
         composeTestRule.runOnUiThread {
-            navController.navigate("add_card")
+            navController.navigate("home")
         }
+        composeTestRule.onNodeWithContentDescription("navigateToAddCard")
+            .performClick();
+        
         composeTestRule.onNodeWithContentDescription("Add")
                 .assertExists()
                 .performClick()
@@ -253,16 +370,15 @@ class MyComposeTest {
 
     @Test
     fun clickOnAddCardUnSuccessful() {
-        val dummyAddFlashCardUnSuccessful =  fun(english:String, vietnamese: String): Int {
-            return 501
-        }
-        val dummyGetAllFlashCards =  fun(): List<FlashCard> {
-            return emptyList()
-        }
-
-        val dummyDataManager = DataManager(
-            addFlashCard = dummyAddFlashCardUnSuccessful,
-            getFlashCards = dummyGetAllFlashCards
+        val resourceProvider = FlashCardResourceProvider(
+            context = ApplicationProvider.getApplicationContext()
+        )
+        val dummyRepository = DummyRepositoryInsertUnSuccessful(
+            allFlashCards = MutableStateFlow(emptyList<FlashCard>())
+        )
+        val flashCardViewModel = FlashCardViewModel(
+            resourceProvider = resourceProvider,
+            repository = dummyRepository
         )
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.navigatorProvider.addNavigator(ComposeNavigator())
@@ -270,7 +386,7 @@ class MyComposeTest {
         composeTestRule.setContent {
             Navigator(
                 navController = navController,
-                dataManager = dummyDataManager
+                flashCardViewModel = flashCardViewModel
             )
         }
         composeTestRule.runOnUiThread {
@@ -285,4 +401,6 @@ class MyComposeTest {
             .assertExists()
             .assertTextEquals("Flash card already exists in your database.")
     }
+    
 }
+

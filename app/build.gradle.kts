@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.test)
     implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.benchmark.common)
     testImplementation(libs.junit)
     // For local unit tests
     testImplementation(libs.androidx.core.testing)

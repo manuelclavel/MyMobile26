@@ -34,9 +34,8 @@ interface FlashCardDao {
     @Query("SELECT * FROM FlashCards")
     fun getAll(): Flow<List<FlashCard>>
 
-    @Query("SELECT * FROM FlashCards WHERE english_card LIKE :english AND " +
-            "vietnamese_card LIKE :vietnamese LIMIT 1")
-    suspend  fun findByCard(english: String, vietnamese: String): FlashCard
+    @Query("SELECT * FROM FlashCards WHERE uid = :flashCardId")
+    fun findByCard(flashCardId : Int): Flow<FlashCard?>
 
     @Insert
     suspend fun insert(flashCard: FlashCard)

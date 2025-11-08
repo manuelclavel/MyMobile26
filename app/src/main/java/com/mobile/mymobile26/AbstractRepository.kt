@@ -6,7 +6,14 @@ import kotlinx.coroutines.flow.StateFlow
 
 abstract class AbstractRepository {
     abstract val allFlashCards: Flow<List<FlashCard>>
+
     abstract suspend fun insert(flashCard: FlashCard)
     abstract suspend fun delete(flashCard: FlashCard)
+    abstract fun get(flashCardId: Int): Flow<FlashCard?>
+
+
+
+
+
 
 }

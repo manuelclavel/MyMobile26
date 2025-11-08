@@ -2,12 +2,29 @@ package com.mobile.com.mobile.mymobile26
 
 import android.database.sqlite.SQLiteConstraintException
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
+import android.util.Log
 
-class FlashCardRepository(private val flashCardDao: FlashCardDao): AbstractRepository() {
-    //suspend fun getAll(): List<FlashCard> {
-    //    return flashCardDao.getAll()
-    //}
+class FlashCardRepository(private val flashCardDao: FlashCardDao
+): AbstractRepository() {
+
     override val allFlashCards: Flow<List<FlashCard>> = flashCardDao.getAll()
+
+    override  fun get(flashCardId: Int): Flow<FlashCard?> {
+        Log.d("AnNam", "trying to get the flash card from database")
+        //try {
+            return flashCardDao.findByCard(flashCardId )
+        //} catch (e: SQLiteConstraintException) {
+        //    Log.d("AnNam", "Error getting flash cards: ${e.message}")
+        //    throw SQLiteConstraintException(e.message)
+        //} catch (e: Exception) {
+        //    Log.d("AnNam", "Error getting flash cards: ${e.message}")
+        //    throw Exception(e.message)
+        //}
+    }
+
+
     override suspend fun insert(flashCard: FlashCard) {
         try {
             flashCardDao.insert(flashCard)
@@ -21,7 +38,11 @@ class FlashCardRepository(private val flashCardDao: FlashCardDao): AbstractRepos
 
     }
 
+
+
     override suspend fun delete(flashCard: FlashCard) {
         flashCardDao.delete(flashCard)
     }
+
+
 }

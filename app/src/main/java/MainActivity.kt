@@ -10,7 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import com.mobile.com.mobile.mymobile26.AbstractDataManager
 import com.mobile.com.mobile.mymobile26.AnNamDatabase
 import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardRepository

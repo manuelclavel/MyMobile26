@@ -15,8 +15,10 @@ import com.mobile.com.mobile.mymobile26.AbstractRepository
 import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardResourceProvider
 import com.mobile.com.mobile.mymobile26.ui.FlashCardViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -29,11 +31,18 @@ class DummyRepository(override val allFlashCards: StateFlow<List<FlashCard>>) : 
     }
     override suspend fun delete(flashCard: FlashCard) {
     }
+
+    override fun get(flashCardId: Int): Flow<FlashCard?> {
+        return flowOf(FlashCard(0,"",""))
+    }
 }
 class DummyRepositoryInsertSuccessful(override val allFlashCards: StateFlow<List<FlashCard>>) : AbstractRepository() {
     override suspend fun insert(flashCard: FlashCard) {
     }
     override suspend fun delete(flashCard: FlashCard) {
+    }
+    override fun get(flashCardId: Int): Flow<FlashCard?> {
+        return flowOf(FlashCard(0,"",""))
     }
 }
 
@@ -42,6 +51,9 @@ class DummyRepositoryInsertUnSuccessful(override val allFlashCards: StateFlow<Li
         throw SQLiteConstraintException()
     }
     override suspend fun delete(flashCard: FlashCard) {
+    }
+    override fun get(flashCardId: Int): Flow<FlashCard?> {
+        return flowOf(FlashCard(0,"",""))
     }
 }
 

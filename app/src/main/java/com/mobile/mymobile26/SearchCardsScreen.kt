@@ -54,7 +54,7 @@ fun FlashCardList(
 
 //@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchCardsScreen(flashCards: List<FlashCard>) {
+fun SearchCardsScreen(flashCards: List<FlashCard>, selectedItem: (Int) -> Unit) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,7 +65,7 @@ fun SearchCardsScreen(flashCards: List<FlashCard>) {
         )
          FlashCardList(
                 flashCards = flashCards,
-                selectedItem = {}
+                selectedItem = selectedItem
          )
     }
 }

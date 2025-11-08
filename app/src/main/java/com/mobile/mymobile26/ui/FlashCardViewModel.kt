@@ -2,8 +2,11 @@ package com.mobile.com.mobile.mymobile26.ui
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
+import androidx.compose.foundation.rememberPlatformOverscrollFactory
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.mobile.R
 import com.mobile.com.mobile.mymobile26.AbstractRepository
@@ -11,17 +14,25 @@ import com.mobile.com.mobile.mymobile26.FlashCard
 import com.mobile.com.mobile.mymobile26.FlashCardRepository
 import com.mobile.com.mobile.mymobile26.FlashCardResourceProvider
 import com.mobile.com.mobile.mymobile26.ResourceProvider
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import perfetto.protos.UiState
 
 class FlashCardViewModel(
     private val resourceProvider: FlashCardResourceProvider,
     private val repository: AbstractRepository
 ): ViewModel() {
+
+    private val _uiState = MutableStateFlow(FlashCardUiState())
+    val uiState: StateFlow<FlashCardUiState> = _uiState.asStateFlow()
+
 
     fun getMessageAddSuccessful(): String {
        return resourceProvider.getString(R.string.add_successful)
@@ -35,6 +46,30 @@ class FlashCardViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
+
+    //The ViewModel will expose the selectedFlashCard as a StateFlow
+    //for your Composable to observe. It collects the Flow from the repository
+    //and converts it into a StateFlow using stateIn.
+
+    //val selectedFlashCard: StateFlow<FlashCard?> =
+    //    repository.get(_uiState.value.currentSelectedFlashCard)
+    //    .stateIn(
+    //        scope = viewModelScope,
+    //        started = SharingStarted.WhileSubscribed(5000), // Keep active for 5 seconds after last subscriber
+    //        initialValue = null // Initial value before data is loaded
+    //    )
+
+
+    fun getFlashCard(flashCardId: Int): StateFlow<FlashCard?> {
+        return repository.get(flashCardId)
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000), // Keep active for 5 seconds after last subscriber
+                initialValue = null // Initial value before data is loaded
+            )
+    }
+
+
     fun insertFlashCard(flashCard: FlashCard) {
         viewModelScope.launch {
             try {
@@ -55,11 +90,13 @@ class FlashCardViewModel(
         }
     }
 
-    fun deleteItem(flashCard: FlashCard) {
+    fun deleteFlashCard(flashCard:FlashCard) {
         viewModelScope.launch {
             repository.delete(flashCard)
         }
     }
+
+
 
 
 
@@ -76,16 +113,13 @@ class FlashCardViewModel(
     for modifying the actual data it holds, triggering recompositions
     when necessary.
      */
-    private val _uiState = MutableStateFlow(FlashCardUiState())
-    val uiState: StateFlow<FlashCardUiState> = _uiState.asStateFlow()
 
 
    private fun resetFlashCardState() {
         _uiState.value = FlashCardUiState(
             currentMessage = "",
             currentEnWord = "",
-            currentVnWord = ""
-        )
+            currentVnWord = "")
 
    }
 
@@ -103,7 +137,29 @@ class FlashCardViewModel(
             _uiState.value.copy(currentVnWord = text)
     }
 
+    
     init {
         resetFlashCardState()
+    }
+
+    private val _selectedItemId = MutableStateFlow<Int?>(null)
+    //@OptIn(ExperimentalCoroutinesApi::class)
+    //val selectedItem: LiveData<FlashCard?> = _selectedItemId.flatMapLatest { flashCardId ->
+    //    if (flashCardId != null) repository.get(flashCardId) else MutableStateFlow(null)
+    //}.asLiveData() // Convert Flow to LiveData if using Flow
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val selectedItem: StateFlow<FlashCard?> =
+    _selectedItemId.flatMapLatest { flashCardId ->
+        if (flashCardId != null) repository.get(flashCardId) else MutableStateFlow(null)
+    }.stateIn(
+            scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000), // Keep active for 5 seconds after last subscriber
+    initialValue = null // Initial value before data is loaded
+    )
+
+
+    fun selectItem(id: Int) {
+        _selectedItemId.value = id
     }
 }

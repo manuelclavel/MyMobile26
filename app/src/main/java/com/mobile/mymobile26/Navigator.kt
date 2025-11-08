@@ -20,10 +20,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.mobile.com.mobile.mymobile26.FlashCard
+import com.mobile.com.mobile.mymobile26.ShowCardScreen
 import com.mobile.com.mobile.mymobile26.ui.FlashCardViewModel
 
 
@@ -46,6 +49,15 @@ fun Navigator(
         navController.navigate("search_cards")
     }
 
+    //fun selectFlashCard(flashCardId:Int){
+    //    flashCardViewModel.selectItem(flashCardId)
+    //}
+
+    val navigateToShowCard = fun(flashCardId: Int) {
+        flashCardViewModel.selectItem(flashCardId)
+        navController.navigate("show_card")
+    }
+
     val changeMessage = fun (text:String){
         flashCardViewModel.updateCurrentMessage(text)
     }
@@ -57,12 +69,24 @@ fun Navigator(
     }
 
 
+    val deleteFlashCard = fun (flashCard:FlashCard){
+        flashCardViewModel.deleteFlashCard(flashCard)
+    }
+
     val insertFlashCard = fun (flashCard: FlashCard) {
         flashCardViewModel.insertFlashCard(flashCard)
     }
 
     val flashCards: List<FlashCard>
     by flashCardViewModel.allFlashCards.collectAsStateWithLifecycle()
+
+    val selectedFlashCard: FlashCard?
+    by flashCardViewModel.selectedItem.collectAsStateWithLifecycle()
+
+
+
+
+
 
 
     Scaffold(
@@ -146,7 +170,15 @@ fun Navigator(
             // SEARCH CARDS
             composable(route = "search_cards") {
                 SearchCardsScreen(
-                    flashCards = flashCards
+                    flashCards = flashCards,
+                    selectedItem = navigateToShowCard
+                )
+            }
+            // SHOW CARDS
+            composable(route = "show_card") {
+                ShowCardScreen(
+                    flashCard = selectedFlashCard,
+                    deleteFlashCard = deleteFlashCard
                 )
             }
         }

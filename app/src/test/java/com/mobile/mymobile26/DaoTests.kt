@@ -47,17 +47,18 @@ class DaoTest {
                 vietnameseCard = "test_vietnamese"
             )
 
-        var result = FlashCard(0, "", "")
+        var result:FlashCard? = FlashCard(0, "", "")
 
         runBlocking {
             flashCardDao.insert(flashCard)
         }
 
         runBlocking {
-            result = flashCardDao.findByCard("test_english", "test_vietnamese")
+                flashCardDao.findByCard(0).collect {
+                    flashCard -> result = flashCard }
         }
-        Assert.assertEquals(result.englishCard, flashCard.englishCard)
-        Assert.assertEquals(result.vietnameseCard, flashCard.vietnameseCard)
+        Assert.assertEquals(result?.englishCard, flashCard.englishCard)
+        Assert.assertEquals(result?.vietnameseCard, flashCard.vietnameseCard)
     }
 
     @Test

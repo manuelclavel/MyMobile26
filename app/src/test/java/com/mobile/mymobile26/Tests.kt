@@ -32,7 +32,7 @@ class DummyRepository(override val allFlashCards: StateFlow<List<FlashCard>>) : 
     override suspend fun delete(flashCard: FlashCard) {
     }
 
-    override fun get(flashCardId: Int): Flow<FlashCard?> {
+    override fun get(english:String?, vietnamese:String?): Flow<FlashCard?> {
         return flowOf(FlashCard(0,"",""))
     }
 }
@@ -41,7 +41,7 @@ class DummyRepositoryInsertSuccessful(override val allFlashCards: StateFlow<List
     }
     override suspend fun delete(flashCard: FlashCard) {
     }
-    override fun get(flashCardId: Int): Flow<FlashCard?> {
+    override fun get(english:String?, vietnamese:String?): Flow<FlashCard?> {
         return flowOf(FlashCard(0,"",""))
     }
 }
@@ -52,7 +52,7 @@ class DummyRepositoryInsertUnSuccessful(override val allFlashCards: StateFlow<Li
     }
     override suspend fun delete(flashCard: FlashCard) {
     }
-    override fun get(flashCardId: Int): Flow<FlashCard?> {
+    override fun get(english:String?, vietnamese:String?): Flow<FlashCard?> {
         return flowOf(FlashCard(0,"",""))
     }
 }

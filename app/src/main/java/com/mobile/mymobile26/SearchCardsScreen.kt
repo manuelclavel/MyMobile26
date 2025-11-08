@@ -19,7 +19,7 @@ import com.mobile.com.mobile.mymobile26.FlashCard
 
 @Composable
 fun FlashCardList(
-    selectedItem: (Int) -> Unit,
+    selectedItem: (FlashCard) -> Unit,
     flashCards: List<FlashCard>
 ) {
     LazyColumn(
@@ -37,7 +37,7 @@ fun FlashCardList(
                         .border(width = 1.dp, color = Color.LightGray)
                         .padding(6.dp)
                         .clickable(onClick = {
-                            selectedItem(flashCard.uid)
+                            selectedItem(flashCard)
                         }
                         )
                 ) {
@@ -54,7 +54,7 @@ fun FlashCardList(
 
 //@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchCardsScreen(flashCards: List<FlashCard>, selectedItem: (Int) -> Unit) {
+fun SearchCardsScreen(flashCards: List<FlashCard>, selectedItem: (FlashCard) -> Unit) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

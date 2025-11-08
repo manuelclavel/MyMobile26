@@ -1,21 +1,13 @@
 package com.mobile.com.mobile.mymobile26.ui
 
 import android.database.sqlite.SQLiteConstraintException
-import android.util.Log
-import androidx.compose.foundation.rememberPlatformOverscrollFactory
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.mobile.R
 import com.mobile.com.mobile.mymobile26.AbstractRepository
 import com.mobile.com.mobile.mymobile26.FlashCard
-import com.mobile.com.mobile.mymobile26.FlashCardRepository
 import com.mobile.com.mobile.mymobile26.FlashCardResourceProvider
-import com.mobile.com.mobile.mymobile26.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import perfetto.protos.UiState
 
 class FlashCardViewModel(
     private val resourceProvider: FlashCardResourceProvider,
@@ -60,8 +51,8 @@ class FlashCardViewModel(
     //    )
 
 
-    fun getFlashCard(flashCardId: Int): StateFlow<FlashCard?> {
-        return repository.get(flashCardId)
+    fun getFlashCard(english:String, vietnamese:String): StateFlow<FlashCard?> {
+        return repository.get(english, vietnamese)
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000), // Keep active for 5 seconds after last subscriber
@@ -78,14 +69,14 @@ class FlashCardViewModel(
                 updateAddEnWord("")
                 updateAddVnWord("")
             } catch (e: SQLiteConstraintException) {
-                //throw SQLiteConstraintException(e.message)
-                updateCurrentMessage(getMessageAddUnSuccessful())
-                Log.d("AnNam", "Error getting flash cards: ${e.message}")
+                throw SQLiteConstraintException(e.message)
+                //updateCurrentMessage(getMessageAddUnSuccessful())
+               // Log.d("AnNam", "Error getting flash cards: ${e.message}")
             } catch (e: Exception) {
                 // Catch any other unexpected exceptions
-                //throw Exception(e.message)
-                updateCurrentMessage("Error getting flash cards: ${e.message}")
-                Log.d("AnNam", "Error getting flash cards: ${e.message}")
+                throw Exception(e.message)
+                //updateCurrentMessage("Error getting flash cards: ${e.message}")
+               // Log.d("AnNam", "Error getting flash cards: ${e.message}")
             }
         }
     }
@@ -142,7 +133,7 @@ class FlashCardViewModel(
         resetFlashCardState()
     }
 
-    private val _selectedItemId = MutableStateFlow<Int?>(null)
+    private val _selectedFlashCard = MutableStateFlow<FlashCard?>(null)
     //@OptIn(ExperimentalCoroutinesApi::class)
     //val selectedItem: LiveData<FlashCard?> = _selectedItemId.flatMapLatest { flashCardId ->
     //    if (flashCardId != null) repository.get(flashCardId) else MutableStateFlow(null)
@@ -150,8 +141,8 @@ class FlashCardViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val selectedItem: StateFlow<FlashCard?> =
-    _selectedItemId.flatMapLatest { flashCardId ->
-        if (flashCardId != null) repository.get(flashCardId) else MutableStateFlow(null)
+    _selectedFlashCard.flatMapLatest { flashCard ->
+        if (flashCard != null) repository.get(flashCard.englishCard, flashCard.vietnameseCard) else MutableStateFlow(null)
     }.stateIn(
             scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(5000), // Keep active for 5 seconds after last subscriber
@@ -159,7 +150,7 @@ class FlashCardViewModel(
     )
 
 
-    fun selectItem(id: Int) {
-        _selectedItemId.value = id
+    fun selectItem(flashCard: FlashCard) {
+        _selectedFlashCard.value = flashCard
     }
 }

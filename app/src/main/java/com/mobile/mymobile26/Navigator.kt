@@ -53,8 +53,8 @@ fun Navigator(
     //    flashCardViewModel.selectItem(flashCardId)
     //}
 
-    val navigateToShowCard = fun(flashCardId: Int) {
-        flashCardViewModel.selectItem(flashCardId)
+    val navigateToShowCard = fun(flashCard: FlashCard) {
+        flashCardViewModel.selectItem(flashCard)
         navController.navigate("show_card")
     }
 

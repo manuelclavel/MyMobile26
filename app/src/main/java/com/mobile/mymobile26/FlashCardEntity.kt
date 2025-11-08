@@ -1,6 +1,5 @@
 package com.mobile.com.mobile.mymobile26
 
-import androidx.lifecycle.LiveData
 import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Dao
@@ -34,8 +33,9 @@ interface FlashCardDao {
     @Query("SELECT * FROM FlashCards")
     fun getAll(): Flow<List<FlashCard>>
 
-    @Query("SELECT * FROM FlashCards WHERE uid = :flashCardId")
-    fun findByCard(flashCardId : Int): Flow<FlashCard?>
+    @Query("SELECT * FROM FlashCards WHERE english_card LIKE :english AND " +
+            "vietnamese_card LIKE :vietnamese LIMIT 1")
+    fun findByCard(english: String?, vietnamese: String?): Flow<FlashCard?>
 
     @Insert
     suspend fun insert(flashCard: FlashCard)
